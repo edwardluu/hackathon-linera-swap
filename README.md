@@ -1,5 +1,5 @@
 # MUN SWAP APPLICATION
-![Image](https://github.com/edwardluu/hackathon-linera-swap/blob/mainn/overview.png?raw=true)
+![Image](https://github.com/edwardluu/hackathon-linera-swap/blob/main/overview.png?raw=true)
 ## Getting Started
 
 First, run the development server:
