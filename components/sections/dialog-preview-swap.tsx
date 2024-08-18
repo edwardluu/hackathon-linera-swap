@@ -17,9 +17,9 @@ interface PreviewSwapProps {
   receive: string;
   token1: TokenInfo;
   token2: TokenInfo;
-  refeactBalance: Function;
+  refetchBalance: Function;
 }
-const DialogPreviewSwap = ({ refeactBalance, isMaxBalance, isMaxLiquidity, pay, receive, token1, token2 }: PreviewSwapProps) => {
+const DialogPreviewSwap = ({ refetchBalance, isMaxBalance, isMaxLiquidity, pay, receive, token1, token2 }: PreviewSwapProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSwapSuccess, setIsSwapSuccess] = useState(false);
 
@@ -27,7 +27,7 @@ const DialogPreviewSwap = ({ refeactBalance, isMaxBalance, isMaxLiquidity, pay, 
     onError: (error) => console.log("Transfer Error: " + error.message),
     onCompleted: () => {
       setIsSwapSuccess(true);
-      refeactBalance();
+      refetchBalance();
     },
   });
 

@@ -34,9 +34,11 @@ const SwapForm = () => {
     setValue(input1);
   };
 
-  const refeactBalance = () => {
+  const refetchBalance = () => {
     refetchBalance1();
     refetchBalance2();
+    setInput1("0");
+    setValue("0");
   }
 
   const onSelectToken = (token: any, position: number) => {
@@ -189,7 +191,7 @@ const SwapForm = () => {
           </Button>
         </DialogAccount>
       )}
-      {isConnected && <DialogPreviewSwap refeactBalance={refeactBalance} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
+      {isConnected && <DialogPreviewSwap refetchBalance={refetchBalance} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
     </>
   );
 };

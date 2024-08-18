@@ -42,7 +42,6 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
   };
 
   useEffect(() => {
-    console.log(!!value && isOpen)
       if(!!value && isOpen) {
         refetchBalance1();
         refetchBalance2();
