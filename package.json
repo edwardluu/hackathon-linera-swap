@@ -2,6 +2,7 @@
   "name": "defi-linera",
   "version": "0.1.0",
   "private": true,
+  "author": "edwardluu",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
