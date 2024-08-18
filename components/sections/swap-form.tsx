@@ -24,8 +24,8 @@ const SwapForm = () => {
   const [token1, setToken1] = useState(LIST_TOKEN[0]);
   const [token2, setToken2] = useState(LIST_TOKEN[1]);
 
-  const { data: balance1 } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: "no-cache" });
-  const { data: balance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: "no-cache" });
+  const { data: balance1, refetch: refetchBalance1  } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: "no-cache" });
+  const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: "no-cache" });
 
   const switchToken = () => {
     setToken1(token2);
@@ -33,6 +33,11 @@ const SwapForm = () => {
     setInput1(debouncedValue);
     setValue(input1);
   };
+
+  const refeactBalance = () => {
+    refetchBalance1();
+    refetchBalance2();
+  }
 
   const onSelectToken = (token: any, position: number) => {
     if (position === 0 && token.tokenIdx === token2.tokenIdx) {
@@ -121,7 +126,9 @@ const SwapForm = () => {
             <div className="flex items-center gap-4 pl-2">
               <div className="flex items-center gap-1">
                 <Wallet className="text-yellow-500" size={14} />
-                <span className="text-xs">{token1.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span>
+                {
+                 value ? <span className="text-xs">{ token1.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0
+                }
                 <Button onClick={() => onSetValue(token1.tokenIdx === 0 ? balanceToken0 : balanceToken1)} variant="outline" className="text-xs border-0 uppercase rounded h-auto py-1 px-2 ml-1">
                   Max
                 </Button>
@@ -141,7 +148,9 @@ const SwapForm = () => {
             <div className="flex items-center gap-4 pl-2">
               <div className="flex items-center gap-1">
                 <Wallet className="text-yellow-500" size={14} />
-                <span className="text-xs">{token2.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span>
+                {
+                 value ? <span className="text-xs">{ token2.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0
+                }
               </div>
             </div>
           </div>
@@ -180,7 +189,7 @@ const SwapForm = () => {
           </Button>
         </DialogAccount>
       )}
-      {isConnected && <DialogPreviewSwap isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
+      {isConnected && <DialogPreviewSwap refeactBalance={refeactBalance} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
     </>
   );
 };

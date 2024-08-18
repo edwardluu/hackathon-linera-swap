@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 
 import Image from "next/image";
 import { Wallet } from "lucide-react";
@@ -20,8 +20,8 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
   const [value, setValue, removeValue] = useLocalStorage("account", "");
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: balance1 } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: 'no-cache'} );
-  const { data: balance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: 'no-cache'});
+  const { data: balance1, refetch: refetchBalance1 } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: 'no-cache'} );
+  const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: 'no-cache'});
 
   const displayAccount = useMemo(() => {
     return value ? `${value.substring(0, 4)}...${value.substring(value.length - 4, value.length)}` : "No account";
@@ -40,6 +40,14 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
     removeValue();
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    console.log(!!value && isOpen)
+      if(!!value && isOpen) {
+        refetchBalance1();
+        refetchBalance2();
+      }
+  }, [value, isOpen])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
