@@ -45,7 +45,6 @@ const DialogPreviewSwap = ({ refetchBalance, isMaxBalance, isMaxLiquidity, pay, 
   
 
   const openChange = (value: boolean | ((prevState: boolean) => boolean)) => {
-    console.log(value)
     if (!value) {
       setIsSwapSuccess(false);
     }

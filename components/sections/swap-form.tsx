@@ -19,12 +19,12 @@ const DialogPreviewSwap = dynamic(() => import("@/components/sections/dialog-pre
 
 const SwapForm = () => {
   const [value] = useLocalStorage("account", "");
-  const [debouncedValue, setValue] = useDebounceValue("0", 200);
-  const [input1, setInput1] = useState("0");
+  const [debouncedValue, setValue] = useDebounceValue("", 200);
+  const [input1, setInput1] = useState("");
   const [token1, setToken1] = useState(LIST_TOKEN[0]);
   const [token2, setToken2] = useState(LIST_TOKEN[1]);
 
-  const { data: balance1, refetch: refetchBalance1  } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: "no-cache" });
+  const { data: balance1, refetch: refetchBalance1 } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: "no-cache" });
   const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: "no-cache" });
 
   const switchToken = () => {
@@ -37,9 +37,9 @@ const SwapForm = () => {
   const refetchBalance = () => {
     refetchBalance1();
     refetchBalance2();
-    setInput1("0");
-    setValue("0");
-  }
+    setInput1("");
+    setValue("");
+  };
 
   const onSelectToken = (token: any, position: number) => {
     if (position === 0 && token.tokenIdx === token2.tokenIdx) {
@@ -70,11 +70,10 @@ const SwapForm = () => {
 
   const onSetValue = (value: string) => {
     const inputValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1");
-    if (inputValue) {
-      setInput1(inputValue);
-      const valueConvert = Number(inputValue) * (token1.price / token2.price);
-      setValue(`${valueConvert}`);
-    }
+    setInput1(inputValue);
+    const convertInputValue = inputValue !== "" ? Number(inputValue) : "";
+    const valueConvert = convertInputValue !== "" ? convertInputValue * (token1.price / token2.price) : "";
+    setValue(`${valueConvert}`);
   };
 
   const isMaxBalance = useMemo(() => {
@@ -128,9 +127,7 @@ const SwapForm = () => {
             <div className="flex items-center gap-4 pl-2">
               <div className="flex items-center gap-1">
                 <Wallet className="text-yellow-500" size={14} />
-                {
-                 value ? <span className="text-xs">{ token1.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0
-                }
+                {value ? <span className="text-xs">{token1.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0}
                 <Button onClick={() => onSetValue(token1.tokenIdx === 0 ? balanceToken0 : balanceToken1)} variant="outline" className="text-xs border-0 uppercase rounded h-auto py-1 px-2 ml-1">
                   Max
                 </Button>
@@ -150,9 +147,7 @@ const SwapForm = () => {
             <div className="flex items-center gap-4 pl-2">
               <div className="flex items-center gap-1">
                 <Wallet className="text-yellow-500" size={14} />
-                {
-                 value ? <span className="text-xs">{ token2.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0
-                }
+                {value ? <span className="text-xs">{token2.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0}
               </div>
             </div>
           </div>
@@ -160,13 +155,13 @@ const SwapForm = () => {
         </div>
       </div>
       <div className="w-full mt-4 flex flex-col">
-        { isMaxLiquidity && (
+        {isMaxLiquidity && (
           <div className="flex items-center gap-2 bg-red-50 text-primary py-2 px-4 text-xs mb-2 rounded-lg">
             <OctagonAlert size={14} /> Pool Liquidity is Insufficient for this Swap
           </div>
         )}
 
-        { isMaxBalance  && (
+        {isMaxBalance && (
           <div className="flex items-center gap-2 bg-red-50 text-primary py-2 px-4 text-xs mb-2 rounded-lg">
             <OctagonAlert size={14} />
             {token1.name} Amount Exceeds Wallet Balance
