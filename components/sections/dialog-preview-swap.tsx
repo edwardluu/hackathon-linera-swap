@@ -19,10 +19,11 @@ interface PreviewSwapProps {
   token1: TokenInfo;
   token2: TokenInfo;
   resetField: Function;
+  isOpen: boolean,
+  setIsOpen: Function
 }
-const DialogPreviewSwap = ({ resetField, isMaxBalance, isMaxLiquidity, pay, receive, token1, token2 }: PreviewSwapProps) => {
+const DialogPreviewSwap = ({ isOpen, setIsOpen  ,resetField, isMaxBalance, isMaxLiquidity, pay, receive, token1, token2 }: PreviewSwapProps) => {
   const [value] = useLocalStorage("account", "");
-  const [isOpen, setIsOpen] = useState(false);
   const [isSwapSuccess, setIsSwapSuccess] = useState(false);
 
   const [makeSwap, { loading: swapLoading }] = useMutation(MAKE_SWAP, {

@@ -22,6 +22,5 @@ export interface TokenInfo {
   tokenIdx: number,
   name: string,
   price: number,
-  liquidity: number,
   icon: string
 }

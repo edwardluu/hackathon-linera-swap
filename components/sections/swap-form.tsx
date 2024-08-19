@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, startTransition } from "react";
 
 import SelectTokenModal from "@/components/sections/select-token";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,9 @@ const SwapForm = () => {
     skip: !value,
   });
 
+  const [swapSuccess, setSwapSuccess] = useState(false);
+  const [isOpenSwapModal, setIsOpenSwapModal] = useState(false);
+
   const [debouncedValue, setValue] = useDebounceValue("", 200);
   const [input1, setInput1] = useState("");
   const [token1, setToken1] = useState(LIST_TOKEN[0]);
@@ -49,11 +52,19 @@ const SwapForm = () => {
   };
 
   const resetField = () => {
+    setSwapSuccess(true);
     setInput1("");
     setValue("");
-    refetchBalance1();
-    useTimeout(refetchBalance2, 1000)
-  }
+  };
+
+  useEffect(() => {
+    if (swapSuccess && !isOpenSwapModal) {
+      startTransition(() => {
+        refetchBalance1();
+        refetchBalance2();
+      });
+    }
+  }, [swapSuccess, isOpenSwapModal]);
 
   const onSelectToken = (token: any, position: number) => {
     if (position === 0 && token.tokenIdx === token2.tokenIdx) {
@@ -142,7 +153,7 @@ const SwapForm = () => {
               <div className="flex items-center gap-1">
                 <Wallet className="text-yellow-500" size={14} />
                 {value ? <span className="text-xs">{token1.tokenIdx === 0 ? balanceToken0 : balanceToken1}</span> : 0}
-                <Button onClick={() => onSetValue(token1.tokenIdx === 0 ? balanceToken0 : balanceToken1)} variant="outline" className="text-xs border-0 uppercase rounded h-auto py-1 px-2 ml-1">
+                <Button onClick={() => onSetValue(token1.tokenIdx === 0 ? `${balanceToken0}` : `${balanceToken1}`)} variant="outline" className="text-xs border-0 uppercase rounded h-auto py-1 px-2 ml-1">
                   Max
                 </Button>
               </div>
@@ -200,7 +211,7 @@ const SwapForm = () => {
           </Button>
         </DialogAccount>
       )}
-      {isConnected && <DialogPreviewSwap resetField={resetField} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
+      {isConnected && <DialogPreviewSwap isOpen={isOpenSwapModal} setIsOpen={setIsOpenSwapModal} resetField={resetField} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
     </>
   );
 };
