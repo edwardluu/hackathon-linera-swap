@@ -1,6 +1,6 @@
 "use client"
 
-import { ApolloLink, createHttpLink, HttpLink } from "@apollo/client";
+import { createHttpLink } from "@apollo/client";
 
 import {
   ApolloClient,
@@ -29,22 +29,11 @@ function makeClient() {
     httpSuffix: '',
   });
 
-
-  // Declare your endpoints
-
-  // const balance1Endpoint = new HttpLink({
-  //   uri: `http://localhost:8080/chains/${CHAIN}/applications/${FUN1_APP_ID}`,
-  //   fetchOptions: { cache: "no-store" }
-  // })
-  // const balance2Endpoint = new HttpLink({
-  //   uri: `http://localhost:8080/chains/${CHAIN}/applications/${FUN2_APP_ID}`,
-  //   fetchOptions: { cache: "no-store" }
-  // })
-
   return new ApolloClient({
-    // use the `InMemoryCache` from "@apollo/experimental-nextjs-app-support"
     cache: new InMemoryCache(),
     link: multiHttpLink,
+    name: 'MunSwapApp',
+    version: '1.0'
   });
   
 

@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Search } from "lucide-react";
 import Icon from "@/components/ui/icon";

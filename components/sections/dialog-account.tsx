@@ -1,7 +1,6 @@
-"use client";
+"use client"
 
 import React, { ReactNode, useEffect, useMemo, useState } from "react";
-
 import Image from "next/image";
 import { Wallet } from "lucide-react";
 import Icon from "@/components/ui/icon";
@@ -10,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useLocalStorage } from "usehooks-ts";
 import { useSuspenseQuery } from "@apollo/client";
 import { ACCOUNT, LIST_TOKEN } from "@/constant/info";
-import { GET_BALANCE_1, GET_BALANCE_2}  from '@/lib/query';
+import { GET_BALANCE_1, GET_BALANCE_2 } from "@/lib/query";
 
 interface DialogAccountProps {
   children?: ReactNode;
@@ -20,8 +19,21 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
   const [value, setValue, removeValue] = useLocalStorage("account", "");
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: balance1, refetch: refetchBalance1 } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: 'no-cache'} );
-  const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: 'no-cache'});
+
+  const { data: balance1, refetch: refetchBalance1 } = useSuspenseQuery(GET_BALANCE_1, {
+    variables: {
+      owner: `User:${value}`,
+    },
+    fetchPolicy: "no-cache",
+    skipToken: !value,
+  });
+  const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, {
+    variables: {
+      owner: `User:${value}`,
+    },
+    fetchPolicy: "no-cache",
+    skipToken: !value,
+  });
 
   const displayAccount = useMemo(() => {
     return value ? `${value.substring(0, 4)}...${value.substring(value.length - 4, value.length)}` : "No account";
@@ -42,11 +54,11 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
   };
 
   useEffect(() => {
-      if(!!value && isOpen) {
-        refetchBalance1();
-        refetchBalance2();
-      }
-  }, [value, isOpen])
+    if (!!value && isOpen) {
+      refetchBalance1();
+      refetchBalance2();
+    }
+  }, [value, isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -88,20 +100,20 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
                 <p>{displayAccount}</p>
               </div>
               <ul className="w-full flex flex-col gap-3">
-                  <li className="flex items-center justify-between py-2 px-2 rounded-md cursor-pointer gap-4">
-                    <div className="flex items-center gap-2">
-                      <Icon name={LIST_TOKEN[0].icon} size={20} className="text-primary" />
-                      <span className="text-lg text-slate-700">{LIST_TOKEN[0].name}</span>
-                    </div>
-                    <div className="text-lg text-slate-900">{balance1?.accounts?.entry?.value || 0}</div>
-                  </li>
-                  <li className="flex items-center justify-between py-2 px-2 rounded-md cursor-pointer gap-4">
-                    <div className="flex items-center gap-2">
-                      <Icon name={LIST_TOKEN[1].icon} size={20} className="text-primary" />
-                      <span className="text-lg text-slate-700">{LIST_TOKEN[1].name}</span>
-                    </div>
-                    <div className="text-lg text-slate-900">{balance2?.accounts?.entry?.value || 0}</div>
-                  </li>
+                <li className="flex items-center justify-between py-2 px-2 rounded-md cursor-pointer gap-4">
+                  <div className="flex items-center gap-2">
+                    <Icon name={LIST_TOKEN[0].icon} size={20} className="text-primary" />
+                    <span className="text-lg text-slate-700">{LIST_TOKEN[0].name}</span>
+                  </div>
+                  <div className="text-lg text-slate-900">{balance1?.accounts?.entry?.value || 0}</div>
+                </li>
+                <li className="flex items-center justify-between py-2 px-2 rounded-md cursor-pointer gap-4">
+                  <div className="flex items-center gap-2">
+                    <Icon name={LIST_TOKEN[1].icon} size={20} className="text-primary" />
+                    <span className="text-lg text-slate-700">{LIST_TOKEN[1].name}</span>
+                  </div>
+                  <div className="text-lg text-slate-900">{balance2?.accounts?.entry?.value || 0}</div>
+                </li>
               </ul>
             </div>
             <DialogFooter>

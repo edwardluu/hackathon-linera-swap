@@ -1,15 +1,16 @@
-"use client";
+"use client"
 
 import dynamic from "next/dynamic";
+import { useMemo, useState } from "react";
 
 import SelectTokenModal from "@/components/sections/select-token";
 import { Button } from "@/components/ui/button";
 import { Settings2, ArrowDownUp, Wallet, OctagonAlert } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { useMemo, useState } from "react";
+
 import { LIST_TOKEN } from "@/constant/info";
-import { useLocalStorage, useDebounceValue } from "usehooks-ts";
+import { useLocalStorage, useDebounceValue, useTimeout } from "usehooks-ts";
 import { useSuspenseQuery } from "@apollo/client";
 import { GET_BALANCE_1, GET_BALANCE_2 } from "@/lib/query";
 
@@ -19,13 +20,26 @@ const DialogPreviewSwap = dynamic(() => import("@/components/sections/dialog-pre
 
 const SwapForm = () => {
   const [value] = useLocalStorage("account", "");
+  const { data: balance1, refetch: refetchBalance1 } = useSuspenseQuery(GET_BALANCE_1, {
+    variables: {
+      owner: `User:${value}`,
+    },
+    fetchPolicy: "no-cache",
+    skip: !value,
+  });
+
+  const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, {
+    variables: {
+      owner: `User:${value}`,
+    },
+    fetchPolicy: "no-cache",
+    skip: !value,
+  });
+
   const [debouncedValue, setValue] = useDebounceValue("", 200);
   const [input1, setInput1] = useState("");
   const [token1, setToken1] = useState(LIST_TOKEN[0]);
   const [token2, setToken2] = useState(LIST_TOKEN[1]);
-
-  const { data: balance1, refetch: refetchBalance1 } = useSuspenseQuery(GET_BALANCE_1, { fetchPolicy: "no-cache" });
-  const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, { fetchPolicy: "no-cache" });
 
   const switchToken = () => {
     setToken1(token2);
@@ -34,12 +48,12 @@ const SwapForm = () => {
     setValue(input1);
   };
 
-  const refetchBalance = () => {
-    refetchBalance1();
-    refetchBalance2();
+  const resetField = () => {
     setInput1("");
     setValue("");
-  };
+    refetchBalance1();
+    useTimeout(refetchBalance2, 1000)
+  }
 
   const onSelectToken = (token: any, position: number) => {
     if (position === 0 && token.tokenIdx === token2.tokenIdx) {
@@ -186,7 +200,7 @@ const SwapForm = () => {
           </Button>
         </DialogAccount>
       )}
-      {isConnected && <DialogPreviewSwap refetchBalance={refetchBalance} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
+      {isConnected && <DialogPreviewSwap resetField={resetField} isMaxLiquidity={isMaxLiquidity} isMaxBalance={isMaxBalance} pay={input1} receive={debouncedValue} token1={token1} token2={token2} />}
     </>
   );
 };

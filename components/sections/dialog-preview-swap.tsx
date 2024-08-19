@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React from "react";
 import { useState } from "react";
@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { TokenInfo } from "@/constant/info";
 import { useMutation } from "@apollo/client";
 import { MAKE_SWAP } from "@/lib/query";
+import { useLocalStorage } from "usehooks-ts";
 
 
 interface PreviewSwapProps {
@@ -17,9 +18,10 @@ interface PreviewSwapProps {
   receive: string;
   token1: TokenInfo;
   token2: TokenInfo;
-  refetchBalance: Function;
+  resetField: Function;
 }
-const DialogPreviewSwap = ({ refetchBalance, isMaxBalance, isMaxLiquidity, pay, receive, token1, token2 }: PreviewSwapProps) => {
+const DialogPreviewSwap = ({ resetField, isMaxBalance, isMaxLiquidity, pay, receive, token1, token2 }: PreviewSwapProps) => {
+  const [value] = useLocalStorage("account", "");
   const [isOpen, setIsOpen] = useState(false);
   const [isSwapSuccess, setIsSwapSuccess] = useState(false);
 
@@ -27,22 +29,19 @@ const DialogPreviewSwap = ({ refetchBalance, isMaxBalance, isMaxLiquidity, pay, 
     onError: (error) => console.log("Transfer Error: " + error.message),
     onCompleted: () => {
       setIsSwapSuccess(true);
-      refetchBalance();
+      resetField();
     },
   });
 
   const onSwapToken = () => {
     makeSwap({
       variables: {
-        owner: `User:90d81e6e76ac75497a10a40e689de7b912db61a91b3ae28ed4d908e52e44ef7f`,
+        owner: `User:${value}`,
         inputTokenIdx: token1.tokenIdx,
         inputAmount: pay,
-
       },
     }).then(r => console.log("SWAP: " + JSON.stringify(r, null, 2)));
   }
-
-  
 
   const openChange = (value: boolean | ((prevState: boolean) => boolean)) => {
     if (!value) {
