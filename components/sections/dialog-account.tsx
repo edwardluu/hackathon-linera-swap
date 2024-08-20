@@ -25,14 +25,14 @@ const DialogAccount = ({ children }: DialogAccountProps) => {
       owner: `User:${value}`,
     },
     fetchPolicy: "no-cache",
-    skipToken: !value,
+    skip: !value,
   });
   const { data: balance2, refetch: refetchBalance2 } = useSuspenseQuery(GET_BALANCE_2, {
     variables: {
       owner: `User:${value}`,
     },
     fetchPolicy: "no-cache",
-    skipToken: !value,
+    skip: !value,
   });
 
   const displayAccount = useMemo(() => {
